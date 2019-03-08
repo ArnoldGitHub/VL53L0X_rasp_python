@@ -22,20 +22,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_uint, pointer, c_ubyte, c_uint8, c_uint32
-import pkg_resources
-SMBUS='smbus'
-for dist in pkg_resources.working_set:
-    #print(dist.project_name, dist.version)
-    if dist.project_name == 'smbus':
-        break
-    if dist.project_name == 'smbus2':
-        SMBUS='smbus2'
-        break
-if SMBUS == 'smbus':
-    import smbus
-elif SMBUS == 'smbus2':
-    import smbus2 as smbus
-import site
+# import pkg_resources
+# SMBUS='smbus'
+# for dist in pkg_resources.working_set:
+#     #print(dist.project_name, dist.version)
+#     if dist.project_name == 'smbus':
+#         break
+#     if dist.project_name == 'smbus2':
+#         SMBUS='smbus2'
+#         break
+# if SMBUS == 'smbus':
+#     import smbus
+# elif SMBUS == 'smbus2':
+#     import smbus2 as smbus
+# import site
+import smbus2 as smbus
 
 
 class Vl53l0xError(RuntimeError):
@@ -78,7 +79,10 @@ _I2C_READ_FUNC = CFUNCTYPE(c_int, c_ubyte, c_ubyte, POINTER(c_ubyte), c_ubyte)
 _I2C_WRITE_FUNC = CFUNCTYPE(c_int, c_ubyte, c_ubyte, POINTER(c_ubyte), c_ubyte)
 
 # Load VL53L0X shared lib
-_POSSIBLE_LIBRARY_LOCATIONS = ['../bin'] + site.getsitepackages()
+try:
+    _POSSIBLE_LIBRARY_LOCATIONS = ['../bin'] + site.getsitepackages()
+except:
+    _POSSIBLE_LIBRARY_LOCATIONS = ['../bin'] + ['.']
 for lib_location in _POSSIBLE_LIBRARY_LOCATIONS:
     try:
         _TOF_LIBRARY = CDLL(lib_location + "/vl53l0x_python.so")
